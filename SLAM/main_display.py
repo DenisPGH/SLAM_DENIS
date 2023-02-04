@@ -175,29 +175,36 @@ class Display:
         :param node_name: name of the node
         :return: nothing
         """
-
-        status,orientation=self.robo.robo_test(node_name)
-        # when acieve the node, change color
-        if status==True:
+        """ send to robo brain"""
+        is_reach,orientation=self.robo.robo_test(node_name)
+        if is_reach==True:
             print('rotate')
             self.rotation_commands(orientation)
+            # change color and location
+            self.CURRENT_NODE_NAME=node_name
+            self.buttons_color[node_name]=self.CURRENT_NODE_NAME_BG
+            for node in self.buttons_color.keys():
+                if node !=node_name:
+                    self.buttons_color[node] = self.bg_buttons
 
-        self.CURRENT_NODE_NAME=node_name
-        self.buttons_color[node_name]=self.CURRENT_NODE_NAME_BG
-        for node in self.buttons_color.keys():
-            if node !=node_name:
-                self.buttons_color[node] = self.bg_buttons
-
-        print(f"I am on {self.CURRENT_NODE_NAME}")
+            print(f"I am on {self.CURRENT_NODE_NAME}")
 
 
     def rotation_commands(self,angle):
+        """
+        set the HDMI display to wished orientation with bash command
+        :param angle: 0-360
+        :return:
+        """
         up_left=340
         up_right=20
+
         right_up=80
         right_down=100
+
         down_right=170
         down_left=200
+
         left_up=280
         left_down=260
         if USER !=USER_SERVER:
@@ -212,6 +219,9 @@ class Display:
 
             elif left_down<=angle<=left_up:
                 os.system('xrandr --output HDMI1 --rotate right')
+            else:
+                os.system('xrandr --output HDMI1 --rotate up')
+
         else:
             print("rotation here")
 
